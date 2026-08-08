@@ -1,0 +1,233 @@
+<Window x:Class="VjWms.Desktop.UI.Views.ShellWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource ShellTitle}"
+        Icon="/Assets/vjchem.ico"
+        Width="1280" Height="800"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        Background="{StaticResource BgPrimaryBrush}">
+    <Window.Resources>
+        <Style x:Key="SidebarButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="#94A3B8" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="Padding" Value="12,10" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Margin" Value="0,1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}"
+                                CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#1E293B" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+
+        <!-- === SIDEBAR === -->
+        <Border Grid.Column="0" Grid.RowSpan="2"
+                Background="{StaticResource SidebarGradientBrush}"
+                BorderBrush="#1E293B" BorderThickness="0,0,1,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Brand Header -->
+                <Border Grid.Row="0" Padding="20,24,20,20">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <Image Source="/Assets/logo_transparent.png" Width="42" Height="42" Margin="0,0,12,0" />
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="VJ-WMS" Foreground="White" FontSize="18"
+                                           FontWeight="Bold" FontFamily="Segoe UI" />
+                                <TextBlock Text="v0.1.0-alpha" Foreground="#475569"
+                                           FontSize="10" />
+                            </StackPanel>
+                        </StackPanel>
+                        <Border Height="1" Background="#334155" Margin="0,12,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Nav Menu -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="12,8,12,8">
+                        <!-- Section: Overview -->
+                        <TextBlock Text="{DynamicResource NavOverview}" Foreground="#475569" FontSize="11"
+                                   FontWeight="SemiBold" Margin="8,0,0,8"
+                                   FontFamily="Segoe UI" />
+                        <Button Content="{DynamicResource MenuDashboard}" Style="{StaticResource SidebarButton}"
+                                Click="OnNavClick" Tag="Dashboard" />
+
+                        <!-- Section: Warehouse Operations -->
+                        <TextBlock Text="{DynamicResource NavWarehouseOps}" Foreground="#475569" FontSize="11"
+                                   FontWeight="SemiBold" Margin="8,20,0,8" />
+                        <Button Content="{DynamicResource MenuReceipt}" Style="{StaticResource SidebarButton}"
+                                Click="OnNavClick" Tag="Receipt" />
+                        <Button Content="{DynamicResource MenuIssue}" Style="{StaticResource SidebarButton}"
+                                Click="OnNavClick" Tag="Issue" />
+                        <Button Content="{DynamicResource MenuTransfer}" Style="{StaticResource SidebarButton}"
+                                Click="OnNavClick" Tag="Transfer" />
+                        <Button Content="{DynamicResource MenuInventory}" Style="{StaticResource SidebarButton}"
+                                Click="OnNavClick" Tag="Inventory" />
+
+                        <!-- Section: Tools -->
+                        <TextBlock Text="{DynamicResource NavTools}" Foreground="#475569" FontSize="11"
+                                   FontWeight="SemiBold" Margin="8,20,0,8" />
+                        <Button Content="{DynamicResource MenuScanner}" Style="{StaticResource SidebarButton}"
+                                Click="OnNavClick" Tag="Scanner" />
+                        <Button Content="{DynamicResource MenuAttachments}" Style="{StaticResource SidebarButton}"
+                                Click="OnNavClick" Tag="Attachments" />
+                        <Button Content="{DynamicResource MenuSearch}" Style="{StaticResource SidebarButton}"
+                                Click="OnNavClick" Tag="Search" />
+
+                        <!-- Section: System -->
+                        <TextBlock Text="{DynamicResource NavSystem}" Foreground="#475569" FontSize="11"
+                                   FontWeight="SemiBold" Margin="8,20,0,8" />
+                        <Button Content="{DynamicResource MenuSync}" Style="{StaticResource SidebarButton}"
+                                Click="OnNavClick" Tag="Sync" />
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- User Info -->
+                <Border Grid.Row="2" Padding="16" Background="#0F172A">
+                    <StackPanel>
+                        <Border Height="1" Background="#334155" Margin="0,0,0,12" />
+                        <StackPanel Orientation="Horizontal">
+                            <Border Width="36" Height="36" CornerRadius="18"
+                                    Background="{StaticResource PrimaryBrush}" Margin="0,0,10,0">
+                                <TextBlock x:Name="UserInitial" Text="A" FontSize="14"
+                                           FontWeight="Bold" Foreground="White"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock x:Name="UserNameText" Text="admin"
+                                           Foreground="White" FontSize="13" FontWeight="SemiBold" />
+                                <TextBlock Text="Administrator" Foreground="#64748B"
+                                           FontSize="11" />
+                            </StackPanel>
+                        </StackPanel>
+                        <Button Content="{DynamicResource LogoutBtn}" Margin="0,10,0,0"
+                                Style="{StaticResource SidebarButton}"
+                                Click="OnLogoutClick" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- === MAIN CONTENT AREA === -->
+        <Border Grid.Column="1" Grid.Row="0" Margin="0">
+            <Grid Margin="30">
+                <StackPanel x:Name="WelcomePanel" VerticalAlignment="Center"
+                            HorizontalAlignment="Center">
+                    <TextBlock Text="👋" FontSize="48" HorizontalAlignment="Center"
+                               Margin="0,0,0,16" />
+                    <TextBlock Text="{DynamicResource WelcomeMsg}" FontSize="28"
+                               FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"
+                               HorizontalAlignment="Center" Margin="0,0,0,8" />
+                    <TextBlock Text="{DynamicResource WelcomeSubMsg}"
+                               FontSize="16" Foreground="{StaticResource TextSecondaryBrush}"
+                               HorizontalAlignment="Center" Margin="0,0,0,32" />
+
+                    <!-- Quick Stats Cards -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Border Background="{StaticResource BgCardBrush}" CornerRadius="12"
+                                Padding="24,20" Margin="0,0,16,0" Width="200">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource StatActiveWH}" Foreground="#64748B"
+                                           FontSize="12" Margin="0,0,0,8" />
+                                <TextBlock Text="7" FontSize="32" FontWeight="Bold"
+                                           Foreground="{StaticResource PrimaryLightBrush}" />
+                            </StackPanel>
+                        </Border>
+                        <Border Background="{StaticResource BgCardBrush}" CornerRadius="12"
+                                Padding="24,20" Margin="0,0,16,0" Width="200">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource StatPendingSync}" Foreground="#64748B"
+                                           FontSize="12" Margin="0,0,0,8" />
+                                <TextBlock Text="0" FontSize="32" FontWeight="Bold"
+                                           Foreground="{StaticResource AccentBrush}" />
+                            </StackPanel>
+                        </Border>
+                        <Border Background="{StaticResource BgCardBrush}" CornerRadius="12"
+                                Padding="24,20" Width="200">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource StatRejected}" Foreground="#64748B"
+                                           FontSize="12" Margin="0,0,0,8" />
+                                <TextBlock Text="0" FontSize="32" FontWeight="Bold"
+                                           Foreground="{StaticResource WarningBrush}" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Content frame for future pages -->
+                <ContentControl x:Name="ContentArea" Visibility="Collapsed" />
+            </Grid>
+        </Border>
+
+        <!-- === STATUS BAR === -->
+        <Border Grid.Column="1" Grid.Row="1" Background="#0F172A"
+                BorderBrush="#1E293B" BorderThickness="0,1,0,0" Padding="16,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Connection Status -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <Ellipse x:Name="StatusBarDot" Width="8" Height="8"
+                             Margin="0,0,6,0" />
+                    <TextBlock x:Name="StatusBarText" FontSize="11"
+                               Foreground="{StaticResource TextMutedBrush}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+
+                <!-- Current page -->
+                <TextBlock Grid.Column="1" x:Name="CurrentPageText"
+                           Text="Dashboard" FontSize="11"
+                           Foreground="{StaticResource TextMutedBrush}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+                <!-- Language -->
+                <TextBlock Grid.Column="2" Text="{DynamicResource LangIndicator}" FontSize="11"
+                           Foreground="{StaticResource TextMutedBrush}"
+                           VerticalAlignment="Center" Margin="0,0,16,0" />
+
+                <!-- Version -->
+                <TextBlock Grid.Column="3" Text="v0.1.0-alpha" FontSize="11"
+                           Foreground="#334155" VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+    </Grid>
+
+</Window>

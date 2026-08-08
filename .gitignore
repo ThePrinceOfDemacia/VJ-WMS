@@ -1,0 +1,36 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+[Rr]eleases/
+
+# IDE
+.vs/
+*.user
+*.suo
+*.sln.docstates
+
+# User-specific files
+*.rsuser
+*.userosscache
+
+# NuGet
+*.nupkg
+**/packages/*
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Logs
+*.log
+logs/
+
+# SQLite databases (local data)
+*.db
+*.sqlite
+
+# OS files
+Thumbs.db
+.DS_Store
+desktop.ini

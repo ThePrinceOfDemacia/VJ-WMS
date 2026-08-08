@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="LoginTitle" xml:space="preserve">
+    <value>Đăng nhập</value>
+  </data>
+  <data name="UsernameLabel" xml:space="preserve">
+    <value>TÀI KHOẢN</value>
+  </data>
+  <data name="PasswordLabel" xml:space="preserve">
+    <value>MẬT KHẨU</value>
+  </data>
+</root>

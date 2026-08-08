@@ -1,0 +1,53 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Login Window -->
+    <system:String x:Key="LoginTitle">VJ-WMS — Đăng nhập</system:String>
+    <system:String x:Key="Feature1Title">Quản lý kho Offline-First</system:String>
+    <system:String x:Key="Feature1Desc">Hoạt động liên tục ngay cả khi mất mạng</system:String>
+    <system:String x:Key="Feature2Title">Đồng bộ tự động</system:String>
+    <system:String x:Key="Feature2Desc">Tự động đồng bộ khi có kết nối</system:String>
+    <system:String x:Key="Feature3Title">Ký số điện tử</system:String>
+    <system:String x:Key="Feature3Desc">USB Token (Viettel-CA / FPT-CA)</system:String>
+    <system:String x:Key="LoginHeader">Đăng nhập</system:String>
+    <system:String x:Key="LoginSubheader">Nhập thông tin đăng nhập để tiếp tục</system:String>
+    <system:String x:Key="CheckingConnection">Đang kiểm tra kết nối...</system:String>
+    <system:String x:Key="UsernameLabel">TÀI KHOẢN</system:String>
+    <system:String x:Key="PasswordLabel">MẬT KHẨU</system:String>
+    <system:String x:Key="LoginBtn">Đăng nhập</system:String>
+    <system:String x:Key="LoginBtnLoading">Đang đăng nhập...</system:String>
+    <system:String x:Key="EnterCredentialsMsg">Vui lòng nhập tài khoản và mật khẩu</system:String>
+    <system:String x:Key="WrongCredentialsMsg">Tài khoản hoặc mật khẩu không đúng</system:String>
+    <system:String x:Key="LoginErrorMsg">Lỗi đăng nhập: {0}</system:String>
+    <system:String x:Key="ServerConnected">Đã kết nối server</system:String>
+    <system:String x:Key="ServerOffline">Offline — Đăng nhập bằng thông tin đã lưu</system:String>
+
+    <!-- Shell Window -->
+    <system:String x:Key="ShellTitle">VJ-WMS — Quản lý Kho</system:String>
+    <system:String x:Key="NavOverview">TỔNG QUAN</system:String>
+    <system:String x:Key="NavWarehouseOps">NGHIỆP VỤ KHO</system:String>
+    <system:String x:Key="NavTools">CÔNG CỤ</system:String>
+    <system:String x:Key="NavSystem">HỆ THỐNG</system:String>
+    <system:String x:Key="MenuDashboard">📊  Dashboard</system:String>
+    <system:String x:Key="MenuReceipt">📥  Phiếu nhập kho</system:String>
+    <system:String x:Key="MenuIssue">📤  Phiếu xuất kho</system:String>
+    <system:String x:Key="MenuTransfer">🔄  Luân chuyển kho</system:String>
+    <system:String x:Key="MenuInventory">📋  Tồn kho</system:String>
+    <system:String x:Key="MenuScanner">📷  Quét QR/Barcode</system:String>
+    <system:String x:Key="MenuAttachments">📎  Đính kèm</system:String>
+    <system:String x:Key="MenuSearch">🔍  Tìm kiếm PDF</system:String>
+    <system:String x:Key="MenuSync">🔄  Đồng bộ</system:String>
+    <system:String x:Key="LogoutBtn">🚪 Đăng xuất</system:String>
+
+    <!-- Dashboard -->
+    <system:String x:Key="WelcomeMsg">Chào mừng đến với VJ-WMS</system:String>
+    <system:String x:Key="WelcomeSubMsg">Hệ thống Quản lý Kho Offline-First</system:String>
+    <system:String x:Key="StatActiveWH">📦 Kho hoạt động</system:String>
+    <system:String x:Key="StatPendingSync">📥 Chờ đồng bộ</system:String>
+    <system:String x:Key="StatRejected">⚠️ Bị từ chối</system:String>
+    <system:String x:Key="StatusBarOnline">Online — Kết nối server</system:String>
+    <system:String x:Key="StatusBarOffline">Offline — Dữ liệu cục bộ</system:String>
+    
+    <system:String x:Key="LangIndicator">🌐 VI</system:String>
+</ResourceDictionary>
