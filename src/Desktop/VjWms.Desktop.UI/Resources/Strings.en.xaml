@@ -11,7 +11,7 @@
     <system:String x:Key="Feature3Title">Digital Signature</system:String>
     <system:String x:Key="Feature3Desc">USB Token (Viettel-CA / FPT-CA)</system:String>
     <system:String x:Key="LoginHeader">Login</system:String>
-    <system:String x:Key="LoginSubheader">Enter your credentials to continue</system:String>
+    <system:String x:Key="LoginSubheader">Enter your credentials to continue (Auto-Update successful!)</system:String>
     <system:String x:Key="CheckingConnection">Checking connection...</system:String>
     <system:String x:Key="UsernameLabel">USERNAME</system:String>
     <system:String x:Key="PasswordLabel">PASSWORD</system:String>
