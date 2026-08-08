@@ -11,7 +11,7 @@
     <system:String x:Key="Feature3Title">Ký số điện tử</system:String>
     <system:String x:Key="Feature3Desc">USB Token (Viettel-CA / FPT-CA)</system:String>
     <system:String x:Key="LoginHeader">Đăng nhập</system:String>
-    <system:String x:Key="LoginSubheader">Nhập thông tin đăng nhập để tiếp tục (Đã cập nhật Auto-Update thành công!)</system:String>
+    <system:String x:Key="LoginSubheader">Nhập thông tin đăng nhập để tiếp tục</system:String>
     <system:String x:Key="CheckingConnection">Đang kiểm tra kết nối...</system:String>
     <system:String x:Key="UsernameLabel">TÀI KHOẢN</system:String>
     <system:String x:Key="PasswordLabel">MẬT KHẨU</system:String>

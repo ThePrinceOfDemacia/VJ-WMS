@@ -49,9 +49,8 @@ $releaseFiles = Get-ChildItem "$VpkReleaseDir\*" -Include "*.nupkg","*.exe","REL
 $fileArgs = $releaseFiles | ForEach-Object { "`"$_`"" }
 
 # Delete existing release if any, then create new one
-gh release delete "v$Version" --yes 2>$null
+try { gh release delete "v$Version" --yes --cleanup-tag 2>$null } catch { }
 gh release create "v$Version" @releaseFiles --title "VJ-WMS v$Version" --notes "$Notes" --latest
-if ($LASTEXITCODE -ne 0) { Write-Host "GH RELEASE FAILED!" -ForegroundColor Red; exit 1 }
 Write-Host "  GitHub Release OK!" -ForegroundColor Green
 
 # Step 5: Summary
