@@ -45,7 +45,7 @@ Write-Host "  Git push OK!" -ForegroundColor Green
 
 # Step 4: Create GitHub Release with Velopack assets
 Write-Host "`n[4/5] Creating GitHub Release..." -ForegroundColor Yellow
-$releaseFiles = Get-ChildItem "$VpkReleaseDir\*" -Include "*.nupkg","*.exe","RELEASES" | ForEach-Object { $_.FullName }
+$releaseFiles = Get-ChildItem "$VpkReleaseDir\*" -Include "*.nupkg","*.exe","RELEASES","*.json" | ForEach-Object { $_.FullName }
 $fileArgs = $releaseFiles | ForEach-Object { "`"$_`"" }
 
 # Delete existing release if any, then create new one

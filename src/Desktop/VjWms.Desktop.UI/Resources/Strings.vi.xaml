@@ -41,7 +41,7 @@
     <system:String x:Key="LogoutBtn">🚪 Đăng xuất</system:String>
 
     <!-- Dashboard -->
-    <system:String x:Key="WelcomeMsg">Chào mừng đến với VJ-WMS</system:String>
+    <system:String x:Key="WelcomeMsg">Chào mừng đến với VJ-WMS v1.0.1</system:String>
     <system:String x:Key="WelcomeSubMsg">Hệ thống Quản lý Kho Offline-First</system:String>
     <system:String x:Key="StatActiveWH">📦 Kho hoạt động</system:String>
     <system:String x:Key="StatPendingSync">📥 Chờ đồng bộ</system:String>

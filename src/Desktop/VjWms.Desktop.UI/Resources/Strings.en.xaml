@@ -41,7 +41,7 @@
     <system:String x:Key="LogoutBtn">🚪 Logout</system:String>
 
     <!-- Dashboard -->
-    <system:String x:Key="WelcomeMsg">Welcome to VJ-WMS</system:String>
+    <system:String x:Key="WelcomeMsg">Welcome to VJ-WMS v1.0.1</system:String>
     <system:String x:Key="WelcomeSubMsg">Offline-First Warehouse Management System</system:String>
     <system:String x:Key="StatActiveWH">📦 Active Warehouses</system:String>
     <system:String x:Key="StatPendingSync">📥 Pending Sync</system:String>
