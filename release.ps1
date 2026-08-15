@@ -58,37 +58,17 @@ $releaseFiles = @(
 Write-Host "Files to upload:" -ForegroundColor Cyan
 
 foreach ($file in $releaseFiles) {
-    if (Test-Path $file) {
-        $item = Get-Item $file
-        Write-Host "  $($item.Name) - $([math]::Round($item.Length / 1MB, 2)) MB"
-    }
-    else {
+    if (!(Test-Path $file)) {
         Write-Host "  MISSING: $file" -ForegroundColor Red
         exit 1
     }
+
+    $item = Get-Item $file
+    Write-Host "  $($item.Name) - $([math]::Round($item.Length / 1MB, 2)) MB"
 }
 
-# Delete existing release if present
-# Check if release already exists
-gh release view "v$Version" --repo "ThePrinceOfDemacia/VJ-WMS" 2>$null
+Write-Host "  Creating GitHub Release..." -ForegroundColor Gray
 
-if ($LASTEXITCODE -eq 0) {
-    Write-Host "  Existing release found. Deleting..." -ForegroundColor Yellow
-
-    gh release delete "v$Version" `
-        --repo "ThePrinceOfDemacia/VJ-WMS" `
-        --yes
-
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "RELEASE DELETE FAILED!" -ForegroundColor Red
-        exit 1
-    }
-}
-else {
-    Write-Host "  No existing release. Creating new one..." -ForegroundColor Gray
-}
-
-# Create release
 gh release create "v$Version" `
     @releaseFiles `
     --repo "ThePrinceOfDemacia/VJ-WMS" `
