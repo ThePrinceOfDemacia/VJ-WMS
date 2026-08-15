@@ -45,12 +45,49 @@ Write-Host "  Git push OK!" -ForegroundColor Green
 
 # Step 4: Create GitHub Release with Velopack assets
 Write-Host "`n[4/5] Creating GitHub Release..." -ForegroundColor Yellow
-$releaseFiles = Get-ChildItem "$VpkReleaseDir\*" -Include "*.nupkg","*.exe","RELEASES","*.json" | ForEach-Object { $_.FullName }
-$fileArgs = $releaseFiles | ForEach-Object { "`"$_`"" }
 
-# Delete existing release if any, then create new one
-try { gh release delete "v$Version" --yes --cleanup-tag 2>$null } catch { }
-gh release create "v$Version" @releaseFiles --title "VJ-WMS v$Version" --notes "$Notes" --latest
+$releaseFiles = @(
+    "$VpkReleaseDir\VjWms-$Version-full.nupkg"
+    "$VpkReleaseDir\VjWms-$Version-delta.nupkg"
+    "$VpkReleaseDir\VjWms-win-Setup.exe"
+    "$VpkReleaseDir\RELEASES"
+    "$VpkReleaseDir\assets.win.json"
+    "$VpkReleaseDir\releases.win.json"
+)
+
+Write-Host "Files to upload:" -ForegroundColor Cyan
+
+foreach ($file in $releaseFiles) {
+    if (Test-Path $file) {
+        $item = Get-Item $file
+        Write-Host "  $($item.Name) - $([math]::Round($item.Length / 1MB, 2)) MB"
+    }
+    else {
+        Write-Host "  MISSING: $file" -ForegroundColor Red
+        exit 1
+    }
+}
+
+# Delete existing release if present
+gh release delete "v$Version" `
+    --repo "ThePrinceOfDemacia/VJ-WMS" `
+    --yes `
+    --cleanup-tag 2>$null
+
+# Create release
+gh release create "v$Version" `
+    @releaseFiles `
+    --repo "ThePrinceOfDemacia/VJ-WMS" `
+    --title "VJ-WMS v$Version" `
+    --notes "$Notes" `
+    --latest `
+    --verify-tag
+
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "GITHUB RELEASE FAILED!" -ForegroundColor Red
+    exit 1
+}
+
 Write-Host "  GitHub Release OK!" -ForegroundColor Green
 
 # Step 5: Summary
