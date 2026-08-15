@@ -1,0 +1,224 @@
+<UserControl x:Class="VjWms.Desktop.UI.Views.Pages.IssueCreateView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <TextBlock Grid.Row="0" Text="📤 Tạo Phiếu Xuất Kho" FontSize="24" FontWeight="Bold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,20" />
+
+            <!-- Error Message -->
+            <Border Grid.Row="1" Background="#7F1D1D" CornerRadius="8" Padding="12,8" Margin="0,0,0,12"
+                    Visibility="{Binding ErrorMessage, Converter={StaticResource NonEmptyToVisibleConverter}, FallbackValue=Collapsed}">
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="#FCA5A5" FontSize="13" />
+            </Border>
+
+            <!-- Form Header -->
+            <Border Grid.Row="2" Background="{DynamicResource BgCardBrush}" CornerRadius="12"
+                    Padding="20" Margin="0,0,0,16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Row 1: Warehouse + Customer + Date -->
+                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,12">
+                        <TextBlock Text="KHO XUẤT *" Foreground="#94A3B8" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <ComboBox ItemsSource="{Binding Warehouses}" SelectedItem="{Binding SelectedWarehouse}"
+                                  DisplayMemberPath="Name" FontSize="13" Padding="8,6" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,12,12">
+                        <TextBlock Text="KHÁCH HÀNG" Foreground="#94A3B8" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <ComboBox ItemsSource="{Binding Customers}" SelectedItem="{Binding SelectedCustomer}"
+                                  DisplayMemberPath="Name" FontSize="13" Padding="8,6" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,12">
+                        <TextBlock Text="NGÀY XUẤT" Foreground="#94A3B8" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <DatePicker SelectedDate="{Binding IssueDate}" FontSize="13" Padding="8,6" />
+                    </StackPanel>
+
+                    <!-- Row 2: Contract + RO + Reason -->
+                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,12">
+                        <TextBlock Text="SỐ HĐ/PO" Foreground="#94A3B8" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding ContractNumber, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="8,6" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,12">
+                        <TextBlock Text="SỐ LỆNH XUẤT (RO)" Foreground="#94A3B8" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding RoNumber, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="8,6" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,12">
+                        <TextBlock Text="LÝ DO XUẤT" Foreground="#94A3B8" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding IssueReason, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="8,6" />
+                    </StackPanel>
+
+                    <!-- Row 3: Delivery Term + Booking + Container -->
+                    <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,12,12">
+                        <TextBlock Text="ĐIỀU KIỆN GIAO HÀNG" Foreground="#94A3B8" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding DeliveryTerm, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="8,6" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,0,12,12">
+                        <TextBlock Text="SỐ BOOKING" Foreground="#94A3B8" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding BookingNo, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="8,6" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,12">
+                        <TextBlock Text="SỐ CONTAINER" Foreground="#94A3B8" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding ContainerNo, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="8,6" />
+                    </StackPanel>
+
+                    <!-- Row 4: Seal + Driver -->
+                    <StackPanel Grid.Row="3" Grid.Column="0" Margin="0,0,12,12">
+                        <TextBlock Text="SỐ SEAL" Foreground="#94A3B8" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding SealNo, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="8,6" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="3" Grid.Column="1" Margin="0,0,12,12">
+                        <TextBlock Text="TÊN LÁI XE" Foreground="#94A3B8" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding DriverName, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="8,6" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="3" Grid.Column="2" Margin="0,0,0,12">
+                        <TextBlock Text="CCCD LÁI XE" Foreground="#94A3B8" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding DriverIdCard, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="8,6" />
+                    </StackPanel>
+
+                    <!-- Row 5: Vehicle -->
+                    <StackPanel Grid.Row="4" Grid.Column="0" Margin="0,0,12,12">
+                        <TextBlock Text="SỐ ĐẦU XE" Foreground="#94A3B8" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding VehicleNumber, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="8,6" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="4" Grid.Column="1" Margin="0,0,12,12">
+                        <TextBlock Text="SỐ MOOC" Foreground="#94A3B8" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding TrailerNumber, UpdateSourceTrigger=PropertyChanged}" FontSize="13" Padding="8,6" />
+                    </StackPanel>
+
+                    <!-- Row 6: Notes -->
+                    <StackPanel Grid.Row="5" Grid.ColumnSpan="3" Margin="0,0,0,0">
+                        <TextBlock Text="GHI CHÚ" Foreground="#94A3B8" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" FontSize="13"
+                                 Padding="8,6" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="40" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Line Items Header -->
+            <Grid Grid.Row="3" Margin="0,0,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="📦 Hàng hóa xuất" FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                <Button Grid.Column="1" Content="➕ Thêm dòng" Command="{Binding AddLineCommand}"
+                        Padding="12,6" FontSize="12" Background="#1E293B" Foreground="#94A3B8"
+                        BorderThickness="0" Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="6"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter />
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
+
+            <!-- Line Items -->
+            <Border Grid.Row="4" Background="{DynamicResource BgCardBrush}" CornerRadius="12" Padding="4">
+                <ItemsControl ItemsSource="{Binding LineItems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Padding="16,8" Margin="0,0,0,4" CornerRadius="6" Background="#0F172A">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="100" />
+                                        <ColumnDefinition Width="60" />
+                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="80" />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding LineNumber}" FontSize="13"
+                                               Foreground="#475569" VerticalAlignment="Center" FontWeight="Bold" />
+                                    <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableProducts}"
+                                              SelectedItem="{Binding SelectedProduct}" DisplayMemberPath="ProductName"
+                                              FontSize="12" Margin="4,0" />
+                                    <TextBox Grid.Column="2" Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"
+                                             FontSize="13" Padding="6,4" Margin="4,0" />
+                                    <TextBlock Grid.Column="3" Text="{Binding UnitDisplay}" FontSize="12"
+                                               Foreground="#64748B" VerticalAlignment="Center" Margin="4,0" />
+                                    <TextBox Grid.Column="4" Text="{Binding LotNumber, UpdateSourceTrigger=PropertyChanged}"
+                                             FontSize="12" Padding="6,4" Margin="4,0" />
+                                    <TextBox Grid.Column="5" Text="{Binding NumberOfBags, UpdateSourceTrigger=PropertyChanged}"
+                                             FontSize="12" Padding="6,4" Margin="4,0" />
+                                    <Button Grid.Column="6" Content="✕" FontSize="12" Foreground="#EF4444"
+                                            Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                            Command="{Binding DataContext.RemoveLineCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+
+            <!-- Action Buttons -->
+            <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+                <Button Content="❌ Hủy" Command="{Binding CancelCommand}"
+                        Padding="16,10" FontSize="13" Margin="0,0,8,0"
+                        Background="#374151" Foreground="#D1D5DB" BorderThickness="0" Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="8"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" />
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button Content="💾 Lưu nháp" Command="{Binding SaveDraftCommand}"
+                        Padding="16,10" FontSize="13" Margin="0,0,8,0"
+                        Background="#1E40AF" Foreground="White" BorderThickness="0" Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="8"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" />
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button Content="✅ Xác nhận" Command="{Binding ConfirmCommand}"
+                        Padding="16,10" FontSize="13"
+                        Background="{DynamicResource PrimaryBrush}" Foreground="White"
+                        BorderThickness="0" Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="8"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" />
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

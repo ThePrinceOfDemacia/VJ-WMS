@@ -169,6 +169,47 @@ public class LocalStockIssueItem
 }
 
 // ============================================================
+// LOCAL TRANSFERS
+// ============================================================
+
+public class LocalTransfer
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public string LocalNumber { get; set; } = string.Empty;
+    public string? OfficialNumber { get; set; }
+    public string SourceWarehouseId { get; set; } = string.Empty;
+    public string DestWarehouseId { get; set; } = string.Empty;
+    public string TransferType { get; set; } = "Logical"; // Logical | Physical
+    public string TransferDate { get; set; } = string.Empty;
+    public string? Notes { get; set; }
+    public string Status { get; set; } = "Draft";
+    public string SyncStatus { get; set; } = "Pending";
+    public string? RejectionReason { get; set; }
+    public string CreatedBy { get; set; } = string.Empty;
+    public string CreatedAt { get; set; } = string.Empty;
+    public string UpdatedAt { get; set; } = string.Empty;
+    public int Version { get; set; } = 1;
+    public bool IsReadOnly { get; set; } = false;
+
+    public ICollection<LocalTransferItem> Items { get; set; } = new List<LocalTransferItem>();
+}
+
+public class LocalTransferItem
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public string TransferId { get; set; } = string.Empty;
+    public string ProductId { get; set; } = string.Empty;
+    public string? SourceLocationId { get; set; }
+    public string? DestLocationId { get; set; }
+    public double Quantity { get; set; }
+    public string Unit { get; set; } = string.Empty;
+    public string? LotNumber { get; set; }
+    public string? BatchNumber { get; set; }
+
+    public LocalTransfer Transfer { get; set; } = null!;
+}
+
+// ============================================================
 // LOCAL ATTACHMENTS
 // ============================================================
 

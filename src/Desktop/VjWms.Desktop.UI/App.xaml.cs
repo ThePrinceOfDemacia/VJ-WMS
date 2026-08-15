@@ -89,7 +89,7 @@ public partial class App : Application
     {
         // Note: LocalDbContext will be configured per-user after login
         // For now, register a factory that can create contexts on demand
-        services.AddTransient<Func<string, LocalDbContext>>(sp => (dbPath) =>
+        services.AddSingleton<Func<string, LocalDbContext>>(sp => (dbPath) =>
         {
             var optionsBuilder = new DbContextOptionsBuilder<LocalDbContext>();
             optionsBuilder.UseSqlite($"Data Source={dbPath}");
@@ -97,7 +97,36 @@ public partial class App : Application
             context.Database.EnsureCreated();
             return context;
         });
+
+        // Navigation Service
+        services.AddSingleton<UI.Services.INavigationService, UI.Services.NavigationService>();
+        services.AddSingleton<Func<Type, UI.ViewModels.BaseViewModel>>(sp => type => (UI.ViewModels.BaseViewModel)sp.GetRequiredService(type));
+
+        // Register ViewModels
+        services.AddTransient<UI.ViewModels.LoginViewModel>();
+        services.AddTransient<UI.ViewModels.ShellViewModel>();
+        services.AddTransient<UI.ViewModels.DashboardViewModel>();
+        services.AddTransient<UI.ViewModels.InventoryViewModel>();
+        
+        services.AddTransient<UI.ViewModels.MasterData.WarehouseListViewModel>();
+        services.AddTransient<UI.ViewModels.MasterData.ProductListViewModel>();
+
+        services.AddTransient<UI.ViewModels.Receipts.ReceiptListViewModel>();
+        services.AddTransient<UI.ViewModels.Receipts.ReceiptCreateViewModel>();
+
+        services.AddTransient<UI.ViewModels.Issues.IssueListViewModel>();
+        services.AddTransient<UI.ViewModels.Issues.IssueCreateViewModel>();
+
+        // Register current DB context scoped to the active user (hacky for WPF but works for single user session)
+        services.AddTransient<LocalDbContext>(sp => 
+        {
+            // The shell window sets this static property after login
+            var dbPath = Path.Combine(AppDataPath, "users", CurrentUsername ?? "admin", "local.db");
+            return sp.GetRequiredService<Func<string, LocalDbContext>>()(dbPath);
+        });
     }
+
+    public static string? CurrentUsername { get; set; }
 
     protected override void OnExit(ExitEventArgs e)
     {

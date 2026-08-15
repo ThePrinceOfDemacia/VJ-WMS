@@ -24,6 +24,8 @@ public class LocalDbContext : DbContext
     public DbSet<LocalStockReceiptItem> LocalStockReceiptItems => Set<LocalStockReceiptItem>();
     public DbSet<LocalStockIssue> LocalStockIssues => Set<LocalStockIssue>();
     public DbSet<LocalStockIssueItem> LocalStockIssueItems => Set<LocalStockIssueItem>();
+    public DbSet<LocalTransfer> LocalTransfers => Set<LocalTransfer>();
+    public DbSet<LocalTransferItem> LocalTransferItems => Set<LocalTransferItem>();
 
     // Attachments
     public DbSet<LocalAttachment> LocalAttachments => Set<LocalAttachment>();
@@ -77,6 +79,20 @@ public class LocalDbContext : DbContext
             e.HasOne(i => i.Issue).WithMany(r => r.Items).HasForeignKey(i => i.IssueId);
         });
 
+        // === Local Transfers ===
+        modelBuilder.Entity<LocalTransfer>(e =>
+        {
+            e.HasKey(t => t.Id);
+            e.HasIndex(t => t.SyncStatus);
+            e.HasIndex(t => t.Status);
+        });
+
+        modelBuilder.Entity<LocalTransferItem>(e =>
+        {
+            e.HasKey(i => i.Id);
+            e.HasOne(i => i.Transfer).WithMany(t => t.Items).HasForeignKey(i => i.TransferId);
+        });
+
         // === Attachments ===
         modelBuilder.Entity<LocalAttachment>(e =>
         {
@@ -87,5 +103,8 @@ public class LocalDbContext : DbContext
         // === Sync ===
         modelBuilder.Entity<SyncLog>(e => { e.HasKey(s => s.Id); });
         modelBuilder.Entity<SyncMetadata>(e => { e.HasKey(s => s.Key); });
+
+        // === Seed Data ===
+        SeedData.Seed(modelBuilder);
     }
 }

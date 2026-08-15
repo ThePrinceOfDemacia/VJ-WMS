@@ -1,12 +1,18 @@
 <Application x:Class="VjWms.Desktop.UI.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:VjWms.Desktop.UI.Converters"
              StartupUri="Views/LoginWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Strings.vi.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            
+            <!-- Converters -->
+            <converters:ZeroToVisibleConverter x:Key="ZeroToVisibleConverter" />
+            <converters:NonEmptyToVisibleConverter x:Key="NonEmptyToVisibleConverter" />
+            <converters:InverseBoolToVisConverter x:Key="InverseBoolToVisConverter" />
             <!-- ===== COLOR PALETTE (Dark Premium Theme) ===== -->
             <Color x:Key="PrimaryColor">#3B82F6</Color>
             <Color x:Key="PrimaryDarkColor">#2563EB</Color>

@@ -1,21 +1,24 @@
 using System.Windows;
 using System.Windows.Media;
+using Microsoft.Extensions.DependencyInjection;
+using VjWms.Desktop.UI.ViewModels;
 
 namespace VjWms.Desktop.UI.Views;
 
 public partial class ShellWindow : Window
 {
-    private readonly string _username;
-    private readonly bool _isOnline;
     private bool _isLoggingOut = false;
 
     public ShellWindow(string username, bool isOnline)
     {
         InitializeComponent();
-        _username = username;
-        _isOnline = isOnline;
+        
+        var vm = App.Services.GetRequiredService<ShellViewModel>();
+        vm.Username = username;
+        vm.IsOnline = isOnline;
+        this.DataContext = vm;
 
-        SetupUI();
+        SetupUI(username, isOnline);
     }
 
     protected override void OnClosed(EventArgs e)
@@ -27,14 +30,13 @@ public partial class ShellWindow : Window
         }
     }
 
-    private void SetupUI()
+    private void SetupUI(string username, bool isOnline)
     {
         // User info
-        UserNameText.Text = _username;
-        UserInitial.Text = _username.Length > 0 ? _username[0].ToString().ToUpper() : "?";
+        UserInitial.Text = username.Length > 0 ? username[0].ToString().ToUpper() : "?";
 
         // Status bar
-        if (_isOnline)
+        if (isOnline)
         {
             StatusBarDot.Fill = (SolidColorBrush)FindResource("OnlineBrush");
             StatusBarText.Text = FindResource("StatusBarOnline") as string;
@@ -43,15 +45,6 @@ public partial class ShellWindow : Window
         {
             StatusBarDot.Fill = (SolidColorBrush)FindResource("OfflineBrush");
             StatusBarText.Text = FindResource("StatusBarOffline") as string;
-        }
-    }
-
-    private void OnNavClick(object sender, RoutedEventArgs e)
-    {
-        if (sender is System.Windows.Controls.Button btn && btn.Tag is string page)
-        {
-            CurrentPageText.Text = page;
-            // TODO: Navigate to page content
         }
     }
 

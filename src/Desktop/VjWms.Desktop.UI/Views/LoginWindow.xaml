@@ -117,17 +117,18 @@
 
                     <!-- Username -->
                     <TextBlock Text="{DynamicResource UsernameLabel}" Style="{StaticResource LabelText}" />
-                    <TextBox x:Name="UsernameBox"
+                    <TextBox x:Name="UsernameBox" Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource ModernTextBox}"
                              Margin="0,0,0,20"
-                             KeyDown="OnKeyDown" />
+                             KeyDown="OnUsernameKeyDown" />
 
                     <!-- Password -->
                     <TextBlock Text="{DynamicResource PasswordLabel}" Style="{StaticResource LabelText}" />
                     <PasswordBox x:Name="PasswordBox"
                                  Style="{StaticResource ModernPasswordBox}"
                                  Margin="0,0,0,12"
-                                 KeyDown="OnKeyDown" />
+                                 PasswordChanged="OnPasswordChanged"
+                                 KeyDown="OnPasswordKeyDown" />
 
                     <!-- Error message -->
                     <TextBlock x:Name="ErrorText" Foreground="{StaticResource DangerBrush}"
@@ -136,8 +137,8 @@
 
                     <!-- Login Button -->
                     <Button x:Name="LoginButton" Content="{DynamicResource LoginBtn}"
+                            Command="{Binding LoginCommand}"
                             Style="{StaticResource PrimaryButton}"
-                            Click="OnLoginClick"
                             HorizontalAlignment="Stretch"
                             Margin="0,8,0,0" />
 
