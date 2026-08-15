@@ -67,10 +67,9 @@ foreach ($file in $releaseFiles) {
     Write-Host "  $($item.Name) - $([math]::Round($item.Length / 1MB, 2)) MB"
 }
 
-Write-Host "  Creating GitHub Release..." -ForegroundColor Gray
+Write-Host "  Creating GitHub Release (Metadata)..." -ForegroundColor Gray
 
 gh release create "v$Version" `
-    @releaseFiles `
     --repo "ThePrinceOfDemacia/VJ-WMS" `
     --title "VJ-WMS v$Version" `
     --notes "$Notes" `
@@ -78,8 +77,19 @@ gh release create "v$Version" `
     --verify-tag
 
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "GITHUB RELEASE FAILED!" -ForegroundColor Red
+    Write-Host "GITHUB RELEASE CREATION FAILED!" -ForegroundColor Red
     exit 1
+}
+
+Write-Host "  Uploading Assets..." -ForegroundColor Gray
+foreach ($file in $releaseFiles) {
+    $item = Get-Item $file
+    Write-Host "  -> Uploading $($item.Name) ($([math]::Round($item.Length / 1MB, 2)) MB)..." -ForegroundColor Cyan
+    gh release upload "v$Version" $file --repo "ThePrinceOfDemacia/VJ-WMS" --clobber
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "UPLOAD FAILED FOR $($item.Name)!" -ForegroundColor Red
+        exit 1
+    }
 }
 
 Write-Host "  GitHub Release OK!" -ForegroundColor Green
