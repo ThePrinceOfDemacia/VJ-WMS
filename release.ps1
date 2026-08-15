@@ -69,10 +69,24 @@ foreach ($file in $releaseFiles) {
 }
 
 # Delete existing release if present
-gh release delete "v$Version" `
-    --repo "ThePrinceOfDemacia/VJ-WMS" `
-    --yes `
-    --cleanup-tag 2>$null
+# Check if release already exists
+gh release view "v$Version" --repo "ThePrinceOfDemacia/VJ-WMS" 2>$null
+
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "  Existing release found. Deleting..." -ForegroundColor Yellow
+
+    gh release delete "v$Version" `
+        --repo "ThePrinceOfDemacia/VJ-WMS" `
+        --yes
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "RELEASE DELETE FAILED!" -ForegroundColor Red
+        exit 1
+    }
+}
+else {
+    Write-Host "  No existing release. Creating new one..." -ForegroundColor Gray
+}
 
 # Create release
 gh release create "v$Version" `
