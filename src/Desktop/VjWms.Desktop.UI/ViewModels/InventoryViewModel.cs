@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using VjWms.Desktop.Domain.Entities;
 using VjWms.Desktop.Infrastructure.SQLite;
+using VjWms.Desktop.UI.Services;
 
 namespace VjWms.Desktop.UI.ViewModels;
 
@@ -34,62 +35,46 @@ public partial class InventoryViewModel : BaseViewModel
     {
         InventoryItems.Clear();
 
-        var inventory = _db.CachedInventories.ToList();
         var warehouses = _db.CachedWarehouses.ToDictionary(w => w.Id);
         var products = _db.CachedProducts.ToDictionary(p => p.Id);
 
-        // Calculate adjustments from receipts and issues
-        var receiptAdjustments = _db.LocalStockReceiptItems
-            .Where(ri => ri.Receipt.Status != "Draft") // Only count confirmed receipts
-            .GroupBy(ri => new { ri.Receipt.WarehouseId, ri.ProductId })
-            .Select(g => new { g.Key.WarehouseId, g.Key.ProductId, Qty = g.Sum(x => x.Quantity) })
-            .ToList();
+        var snapshotDate = _db.CachedInventories.ToList()
+            .ToDictionary(i => (i.WarehouseId, i.ProductId), i => i.SnapshotAt);
 
-        var issueAdjustments = _db.LocalStockIssueItems
-            .Where(ii => ii.Issue.Status != "Draft") // Only count confirmed issues
-            .GroupBy(ii => new { ii.Issue.WarehouseId, ii.ProductId })
-            .Select(g => new { g.Key.WarehouseId, g.Key.ProductId, Qty = g.Sum(x => x.Quantity) })
-            .ToList();
+        var all = InventoryCalculator.CalculateAll(_db);
+        var rows = new List<InventoryRow>();
 
-        foreach (var inv in inventory)
+        foreach (var (key, qty) in all)
         {
             if (SelectedWarehouse != null && !string.IsNullOrEmpty(SelectedWarehouse.Id)
-                && inv.WarehouseId != SelectedWarehouse.Id)
+                && key.WarehouseId != SelectedWarehouse.Id)
                 continue;
 
-            if (!products.TryGetValue(inv.ProductId, out var product)) continue;
+            if (!products.TryGetValue(key.ProductId, out var product)) continue;
 
             if (!string.IsNullOrWhiteSpace(SearchText)
                 && !product.ProductName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)
                 && !product.ProductCode.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
                 continue;
 
-            var warehouseName = warehouses.TryGetValue(inv.WarehouseId, out var wh) ? wh.Name : inv.WarehouseId;
+            var warehouseName = warehouses.TryGetValue(key.WarehouseId, out var wh) ? wh.Name : key.WarehouseId;
             var warehouseCode = wh?.Code ?? "";
 
-            // Add receipt adjustments
-            var receiptQty = receiptAdjustments
-                .Where(r => r.WarehouseId == inv.WarehouseId && r.ProductId == inv.ProductId)
-                .Sum(r => r.Qty);
-
-            // Subtract issue adjustments
-            var issueQty = issueAdjustments
-                .Where(i => i.WarehouseId == inv.WarehouseId && i.ProductId == inv.ProductId)
-                .Sum(i => i.Qty);
-
-            var currentQty = inv.Quantity + receiptQty - issueQty;
-
-            InventoryItems.Add(new InventoryRow
+            rows.Add(new InventoryRow
             {
                 WarehouseCode = warehouseCode,
                 WarehouseName = warehouseName,
                 ProductCode = product.ProductCode,
                 ProductName = product.ProductName,
-                Quantity = currentQty,
+                Quantity = qty.Actual,
+                ExpectedQuantity = qty.Expected,
                 Unit = product.Unit,
-                SnapshotDate = inv.SnapshotAt
+                SnapshotDate = snapshotDate.TryGetValue(key, out var sd) ? sd : ""
             });
         }
+
+        foreach (var row in rows.OrderBy(r => r.WarehouseCode).ThenBy(r => r.ProductCode))
+            InventoryItems.Add(row);
     }
 
     [RelayCommand]
@@ -106,6 +91,7 @@ public class InventoryRow
     public string ProductCode { get; set; } = "";
     public string ProductName { get; set; } = "";
     public double Quantity { get; set; }
+    public double ExpectedQuantity { get; set; }
     public string Unit { get; set; } = "";
     public string SnapshotDate { get; set; } = "";
 }

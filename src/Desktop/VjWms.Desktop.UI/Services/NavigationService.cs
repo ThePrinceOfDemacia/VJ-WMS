@@ -4,6 +4,14 @@ using VjWms.Desktop.UI.ViewModels;
 namespace VjWms.Desktop.UI.Services;
 
 /// <summary>
+/// Interface for ViewModels that can receive navigation parameters.
+/// </summary>
+public interface IParameterReceiver
+{
+    void ReceiveParameter(object parameter);
+}
+
+/// <summary>
 /// Interface for navigating between view models.
 /// </summary>
 public interface INavigationService
@@ -11,6 +19,7 @@ public interface INavigationService
     BaseViewModel? CurrentViewModel { get; }
     event Action? CurrentViewModelChanged;
     void NavigateTo<TViewModel>() where TViewModel : BaseViewModel;
+    void NavigateTo<TViewModel>(object? parameter) where TViewModel : BaseViewModel;
 }
 
 /// <summary>
@@ -42,5 +51,15 @@ public class NavigationService : INavigationService
     public void NavigateTo<TViewModel>() where TViewModel : BaseViewModel
     {
         CurrentViewModel = _viewModelFactory(typeof(TViewModel));
+    }
+
+    public void NavigateTo<TViewModel>(object? parameter) where TViewModel : BaseViewModel
+    {
+        var vm = _viewModelFactory(typeof(TViewModel));
+        if (parameter != null && vm is IParameterReceiver receiver)
+        {
+            receiver.ReceiveParameter(parameter);
+        }
+        CurrentViewModel = vm;
     }
 }

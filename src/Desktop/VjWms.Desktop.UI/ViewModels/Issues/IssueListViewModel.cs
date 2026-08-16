@@ -67,16 +67,49 @@ public partial class IssueListViewModel : BaseViewModel
     [RelayCommand]
     private void Delete(IssueRow? row)
     {
-        if (row == null || row.IsReadOnly || row.Status != "Draft") return;
+        if (row == null || !row.CanEdit) return;
 
         var issue = _db.LocalStockIssues.Include(i => i.Items).FirstOrDefault(i => i.Id == row.Id);
         if (issue != null)
         {
-            _db.LocalStockIssueItems.RemoveRange(issue.Items);
+            _db.LocalStockIssueItems.RemoveRange(issue.Items.ToList());
             _db.LocalStockIssues.Remove(issue);
             _db.SaveChanges();
             LoadIssues();
         }
+    }
+
+    [RelayCommand]
+    private void Edit(IssueRow? row)
+    {
+        if (row == null || !row.CanEdit) return;
+        _nav.NavigateTo<IssueCreateViewModel>(row.Id);
+    }
+
+    [RelayCommand]
+    private void Sync(IssueRow? row)
+    {
+        if (row == null || !row.CanSync) return;
+
+        var issue = _db.LocalStockIssues.FirstOrDefault(i => i.Id == row.Id);
+        if (issue != null)
+        {
+            issue.Status = "SyncFailed"; // Simulate failed sync since no API yet
+            issue.SyncStatus = "Failed";
+            _db.SaveChanges();
+            LoadIssues();
+        }
+    }
+
+    [RelayCommand]
+    private void ViewDetail(IssueRow? row)
+    {
+        if (row == null) return;
+        _nav.NavigateTo<TransactionDetailViewModel>(new TransactionDetailParams
+        {
+            DocumentId = row.Id,
+            DocumentType = "Issue"
+        });
     }
 
     partial void OnFilterStatusChanged(string value) => LoadIssues();
@@ -94,4 +127,7 @@ public class IssueRow
     public string Status { get; set; } = "";
     public string SyncStatus { get; set; } = "";
     public bool IsReadOnly { get; set; }
+
+    public bool CanEdit => !IsReadOnly && (Status == "Draft" || Status == "PendingSync" || Status == "SyncFailed");
+    public bool CanSync => !IsReadOnly && (Status == "Draft" || Status == "PendingSync" || Status == "SyncFailed");
 }

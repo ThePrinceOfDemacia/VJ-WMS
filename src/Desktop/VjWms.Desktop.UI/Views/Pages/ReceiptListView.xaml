@@ -40,7 +40,7 @@
             <TextBlock Text="Lọc:" Foreground="{DynamicResource TextSecondaryBrush}"
                        FontSize="13" VerticalAlignment="Center" Margin="0,0,8,0" />
             <ComboBox SelectedValue="{Binding FilterStatus}" SelectedValuePath="Tag"
-                      Width="160" FontSize="13" Background="#1E293B" Foreground="White">
+                      Width="160" FontSize="13">
                 <ComboBoxItem Content="Tất cả" Tag="All" IsSelected="True" />
                 <ComboBoxItem Content="Nháp" Tag="Draft" />
                 <ComboBoxItem Content="Chờ đồng bộ" Tag="PendingSync" />
@@ -69,7 +69,13 @@
                       HorizontalGridLinesBrush="#1E293B"
                       RowBackground="#0F172A" AlternatingRowBackground="#131C2E"
                       FontSize="13" HeadersVisibility="Column"
-                      SelectionMode="Single" SelectionUnit="FullRow">
+                      SelectionMode="Single" SelectionUnit="FullRow"
+                      PreviewMouseLeftButtonDown="Grid_PreviewMouseLeftButtonDown">
+                <DataGrid.InputBindings>
+                    <MouseBinding Gesture="LeftDoubleClick" 
+                                  Command="{Binding DataContext.ViewDetailCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" 
+                                  CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                </DataGrid.InputBindings>
                 <DataGrid.ColumnHeaderStyle>
                     <Style TargetType="DataGridColumnHeader">
                         <Setter Property="Background" Value="#1E293B" />
@@ -105,14 +111,26 @@
                     <DataGridTextColumn Header="Dòng" Binding="{Binding ItemCount}" Width="60" />
                     <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="120" />
                     <DataGridTextColumn Header="Đồng bộ" Binding="{Binding SyncStatus}" Width="100" />
-                    <DataGridTemplateColumn Header="" Width="80">
+                    <DataGridTemplateColumn Header="Thao tác" Width="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="🗑️" Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                        CommandParameter="{Binding}"
-                                        Background="Transparent" Foreground="#EF4444" BorderThickness="0"
-                                        FontSize="14" Cursor="Hand" Padding="4,2"
-                                        Visibility="{Binding IsReadOnly, Converter={StaticResource InverseBoolToVisConverter}, FallbackValue=Visible}" />
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button Content="📤" Command="{Binding DataContext.SyncCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding}" ToolTip="Đồng bộ"
+                                            Background="Transparent" Foreground="#10B981" BorderThickness="0"
+                                            FontSize="14" Cursor="Hand" Padding="4,2"
+                                            Visibility="{Binding CanSync, Converter={StaticResource BoolToVisConverter}}" />
+                                    <Button Content="✏️" Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding}" ToolTip="Sửa"
+                                            Background="Transparent" Foreground="#F59E0B" BorderThickness="0"
+                                            FontSize="14" Cursor="Hand" Padding="4,2"
+                                            Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisConverter}}" />
+                                    <Button Content="🗑️" Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding}" ToolTip="Xóa"
+                                            Background="Transparent" Foreground="#EF4444" BorderThickness="0"
+                                            FontSize="14" Cursor="Hand" Padding="4,2"
+                                            Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisConverter}}" />
+                                </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

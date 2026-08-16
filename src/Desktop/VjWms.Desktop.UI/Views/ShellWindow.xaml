@@ -7,6 +7,8 @@
         xmlns:masterPages="clr-namespace:VjWms.Desktop.UI.Views.Pages.MasterData"
         xmlns:receipts="clr-namespace:VjWms.Desktop.UI.ViewModels.Receipts"
         xmlns:issues="clr-namespace:VjWms.Desktop.UI.ViewModels.Issues"
+        xmlns:transfers="clr-namespace:VjWms.Desktop.UI.ViewModels.Transfers"
+        xmlns:transferPages="clr-namespace:VjWms.Desktop.UI.Views.Pages.Transfers"
         Title="{DynamicResource ShellTitle}"
         Icon="/Assets/vjchem.ico"
         Width="1280" Height="800"
@@ -38,6 +40,15 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:InventoryViewModel}">
             <pages:InventoryView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type transfers:TransferListViewModel}">
+            <transferPages:TransferListView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type transfers:TransferCreateViewModel}">
+            <transferPages:TransferCreateView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:TransactionDetailViewModel}">
+            <pages:TransactionDetailView />
         </DataTemplate>
 
         <Style x:Key="SidebarButton" TargetType="Button">
@@ -122,6 +133,8 @@
                                 Command="{Binding NavigateToReceiptsCommand}" />
                         <Button Content="{DynamicResource MenuIssue}" Style="{StaticResource SidebarButton}"
                                 Command="{Binding NavigateToIssuesCommand}" />
+                        <Button Content="🔄 Luân chuyển kho" Style="{StaticResource SidebarButton}"
+                                Command="{Binding NavigateToTransfersCommand}" />
                         <Button Content="{DynamicResource MenuInventory}" Style="{StaticResource SidebarButton}"
                                 Command="{Binding NavigateToInventoryCommand}" />
 

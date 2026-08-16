@@ -20,6 +20,7 @@ public partial class DashboardViewModel : BaseViewModel
     [ObservableProperty] private int _totalProducts;
     [ObservableProperty] private int _totalReceipts;
     [ObservableProperty] private int _totalIssues;
+    [ObservableProperty] private int _totalTransfers;
 
     public ObservableCollection<RecentActivity> RecentActivities { get; } = new();
 
@@ -41,18 +42,23 @@ public partial class DashboardViewModel : BaseViewModel
             // Receipts stats
             var receipts = _db.LocalStockReceipts.ToList();
             var issues = _db.LocalStockIssues.ToList();
+            var transfers = _db.LocalTransfers.ToList();
 
             TotalReceipts = receipts.Count;
             TotalIssues = issues.Count;
+            TotalTransfers = transfers.Count;
 
             DraftCount = receipts.Count(r => r.Status == "Draft")
-                       + issues.Count(i => i.Status == "Draft");
+                       + issues.Count(i => i.Status == "Draft")
+                       + transfers.Count(t => t.Status == "Draft");
 
             PendingSyncCount = receipts.Count(r => r.SyncStatus == "Pending" && r.Status == "PendingSync")
-                             + issues.Count(i => i.SyncStatus == "Pending" && i.Status == "PendingSync");
+                             + issues.Count(i => i.SyncStatus == "Pending" && i.Status == "PendingSync")
+                             + transfers.Count(t => t.SyncStatus == "Pending" && t.Status == "PendingSync");
 
             RejectedCount = receipts.Count(r => r.SyncStatus == "Rejected")
-                          + issues.Count(i => i.SyncStatus == "Rejected");
+                          + issues.Count(i => i.SyncStatus == "Rejected")
+                          + transfers.Count(t => t.SyncStatus == "Rejected");
 
             // Recent activities
             RecentActivities.Clear();
@@ -78,7 +84,18 @@ public partial class DashboardViewModel : BaseViewModel
                     Date = i.CreatedAt
                 });
 
-            foreach (var activity in recentReceipts.Concat(recentIssues)
+            var recentTransfers = transfers
+                .OrderByDescending(t => t.CreatedAt)
+                .Take(5)
+                .Select(t => new RecentActivity
+                {
+                    Icon = "🔄",
+                    Description = $"Phiếu luân chuyển {t.LocalNumber}",
+                    Status = t.Status,
+                    Date = t.CreatedAt
+                });
+
+            foreach (var activity in recentReceipts.Concat(recentIssues).Concat(recentTransfers)
                          .OrderByDescending(a => a.Date).Take(8))
             {
                 RecentActivities.Add(activity);
@@ -98,6 +115,9 @@ public partial class DashboardViewModel : BaseViewModel
 
     [RelayCommand]
     private void NavigateToIssues() => _nav.NavigateTo<Issues.IssueListViewModel>();
+
+    [RelayCommand]
+    private void NavigateToTransfers() => _nav.NavigateTo<Transfers.TransferListViewModel>();
 }
 
 public class RecentActivity

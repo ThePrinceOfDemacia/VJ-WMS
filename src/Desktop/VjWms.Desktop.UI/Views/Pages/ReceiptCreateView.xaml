@@ -1,6 +1,7 @@
 <UserControl x:Class="VjWms.Desktop.UI.Views.Pages.ReceiptCreateView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:VjWms.Desktop.UI.Views.Controls">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <Grid Margin="10">
             <Grid.RowDefinitions>
@@ -9,6 +10,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
@@ -92,13 +94,55 @@
             <!-- Line Items Header -->
             <Grid Grid.Row="3" Margin="0,0,0,8">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="📦 Hàng hóa" FontSize="16" FontWeight="SemiBold"
+                
+                <TextBlock Text="📦 Danh sách hàng hóa" FontSize="16" FontWeight="SemiBold"
                            Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
-                <Button Grid.Column="1" Content="➕ Thêm dòng" Command="{Binding AddLineCommand}"
-                        Padding="12,6" FontSize="12" Background="#1E293B" Foreground="#94A3B8"
+
+                <!-- Scanner Controls -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="20,0,0,0" VerticalAlignment="Center">
+                    <Button Content="📷 Quét QR từ ảnh" Command="{Binding ScanFromImageCommand}"
+                            Padding="8,4" FontSize="12" Background="#1E293B" Foreground="#3B82F6" BorderThickness="0" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter />
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    
+                    <Button Content="📱 Máy quét USB" Command="{Binding ToggleHidScannerCommand}" Margin="8,0,0,0"
+                            Padding="8,4" FontSize="12" BorderThickness="0" Cursor="Hand">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="#1E293B" />
+                                <Setter Property="Foreground" Value="#94A3B8" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsHidListening}" Value="True">
+                                        <Setter Property="Background" Value="#3B82F6" />
+                                        <Setter Property="Foreground" Value="White" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter />
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    
+                    <TextBlock Text="{Binding ScanStatusMessage}" Foreground="#10B981" FontSize="12" VerticalAlignment="Center" Margin="8,0,0,0" />
+                </StackPanel>
+
+                <Button Grid.Column="2" Content="➕ Thêm dòng" Command="{Binding AddLineCommand}"
+                        Padding="10,6" FontSize="12" Background="#1E293B" Foreground="#94A3B8"
                         BorderThickness="0" Cursor="Hand">
                     <Button.Template>
                         <ControlTemplate TargetType="Button">
@@ -113,51 +157,74 @@
 
             <!-- Line Items -->
             <Border Grid.Row="4" Background="{DynamicResource BgCardBrush}" CornerRadius="12" Padding="4">
-                <ItemsControl ItemsSource="{Binding LineItems}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border Padding="16,8" Margin="0,0,0,4" CornerRadius="6" Background="#0F172A">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="30" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="100" />
-                                        <ColumnDefinition Width="60" />
-                                        <ColumnDefinition Width="120" />
-                                        <ColumnDefinition Width="80" />
-                                        <ColumnDefinition Width="30" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{Binding LineNumber}" FontSize="13"
-                                               Foreground="#475569" VerticalAlignment="Center" FontWeight="Bold" />
-                                    <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableProducts}"
-                                              SelectedItem="{Binding SelectedProduct}" DisplayMemberPath="ProductName"
-                                              FontSize="12" Margin="4,0" />
-                                    <TextBox Grid.Column="2" Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"
-                                             FontSize="13" Padding="6,4" Margin="4,0" />
-                                    <TextBlock Grid.Column="3" Text="{Binding UnitDisplay}" FontSize="12"
-                                               Foreground="#64748B" VerticalAlignment="Center" Margin="4,0" />
-                                    <TextBox Grid.Column="4" Text="{Binding LotNumber, UpdateSourceTrigger=PropertyChanged}"
-                                             FontSize="12" Padding="6,4" Margin="4,0" />
-                                    <TextBox Grid.Column="5" Text="{Binding NumberOfBags, UpdateSourceTrigger=PropertyChanged}"
-                                             FontSize="12" Padding="6,4" Margin="4,0" />
-                                    <Button Grid.Column="6" Content="✕" FontSize="12" Foreground="#EF4444"
-                                            Background="Transparent" BorderThickness="0" Cursor="Hand"
-                                            Command="{Binding DataContext.RemoveLineCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                            CommandParameter="{Binding}" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <DataGrid ItemsSource="{Binding LineItems}" AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          Background="Transparent" Foreground="{DynamicResource TextPrimaryBrush}"
+                          BorderThickness="0" GridLinesVisibility="Horizontal"
+                          HorizontalGridLinesBrush="#1E293B"
+                          RowBackground="#0F172A" AlternatingRowBackground="#131C2E"
+                          FontSize="13" HeadersVisibility="Column">
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Background" Value="#1E293B" />
+                            <Setter Property="Foreground" Value="#94A3B8" />
+                            <Setter Property="Padding" Value="12,8" />
+                            <Setter Property="FontSize" Value="12" />
+                            <Setter Property="FontWeight" Value="SemiBold" />
+                            <Setter Property="BorderThickness" Value="0" />
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="#" Binding="{Binding LineNumber}" Width="40" IsReadOnly="True" />
+                        <DataGridTemplateColumn Header="Sản phẩm *" Width="250">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox ItemsSource="{Binding AvailableProducts}"
+                                              SelectedItem="{Binding SelectedProduct, UpdateSourceTrigger=PropertyChanged}"
+                                              DisplayMemberPath="ProductName"
+                                              FontSize="12" Margin="2" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Số lượng *" Width="100">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"
+                                             FontSize="12" Background="#1E293B" Foreground="White"
+                                             Padding="6,4" BorderThickness="0" Margin="2" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="ĐVT" Binding="{Binding UnitDisplay}" Width="70" IsReadOnly="True" />
+                        <DataGridTemplateColumn Header="Số lô" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding LotNumber, UpdateSourceTrigger=PropertyChanged}"
+                                             FontSize="12" Background="#1E293B" Foreground="White"
+                                             Padding="6,4" BorderThickness="0" Margin="2" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="" Width="50">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="✕" 
+                                            Command="{Binding DataContext.RemoveLineCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding}"
+                                            Background="Transparent" Foreground="#EF4444" BorderThickness="0"
+                                            FontSize="14" Cursor="Hand" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
             </Border>
 
-            <!-- Column headers for line items -->
-            <Grid Grid.Row="3" Margin="20,24,20,0" Visibility="Collapsed">
-                <!-- Hidden reference for column alignment -->
-            </Grid>
+            <!-- Attachments -->
+            <controls:AttachmentPanel Grid.Row="5" DataContext="{Binding AttachmentPanel}" Margin="0,16,0,16" />
 
             <!-- Action Buttons -->
-            <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,8">
                 <Button Content="❌ Hủy" Command="{Binding CancelCommand}"
                         Padding="16,10" FontSize="13" Margin="0,0,8,0"
                         Background="#374151" Foreground="#D1D5DB" BorderThickness="0" Cursor="Hand">

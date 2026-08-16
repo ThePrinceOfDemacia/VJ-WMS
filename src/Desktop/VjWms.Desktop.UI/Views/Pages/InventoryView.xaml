@@ -23,12 +23,12 @@
             <TextBlock Text="Kho:" Foreground="{DynamicResource TextSecondaryBrush}"
                        FontSize="13" VerticalAlignment="Center" Margin="0,0,8,0" />
             <ComboBox ItemsSource="{Binding Warehouses}" SelectedItem="{Binding SelectedWarehouse}"
-                      DisplayMemberPath="Name" Width="200" FontSize="13" Background="#1E293B" Foreground="White" />
+                      DisplayMemberPath="Name" Width="200" FontSize="13" />
             
             <TextBlock Text="Tìm kiếm:" Foreground="{DynamicResource TextSecondaryBrush}"
                        FontSize="13" VerticalAlignment="Center" Margin="16,0,8,0" />
             <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                     Width="200" FontSize="13" Background="#1E293B" Foreground="White" Padding="6,4"
+                     Width="200" FontSize="13" Padding="6,4"
                      BorderThickness="1" BorderBrush="#334155" />
 
             <Button Content="🔄 Làm mới" Command="{Binding RefreshCommand}" Margin="12,0,0,0"
@@ -86,11 +86,19 @@
                     <DataGridTextColumn Header="Kho" Binding="{Binding WarehouseCode}" Width="100" />
                     <DataGridTextColumn Header="Mã hàng" Binding="{Binding ProductCode}" Width="150" />
                     <DataGridTextColumn Header="Tên hàng hóa" Binding="{Binding ProductName}" Width="250" />
-                    <DataGridTextColumn Header="Số lượng" Binding="{Binding Quantity, StringFormat={}{0:N0}}" Width="120">
+                    <DataGridTextColumn Header="Tồn thực tế" Binding="{Binding Quantity, StringFormat={}{0:N0}}" Width="120">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
                                 <Setter Property="HorizontalAlignment" Value="Right" />
                                 <Setter Property="FontWeight" Value="Bold" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Tồn dự kiến" Binding="{Binding ExpectedQuantity, StringFormat={}{0:N0}}" Width="120">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Right" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>

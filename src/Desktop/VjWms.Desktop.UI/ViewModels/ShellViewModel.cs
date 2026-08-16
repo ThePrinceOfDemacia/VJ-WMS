@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using VjWms.Desktop.UI.Services;
 using VjWms.Desktop.UI.ViewModels.Issues;
 using VjWms.Desktop.UI.ViewModels.Receipts;
+using VjWms.Desktop.UI.ViewModels.Transfers;
 
 namespace VjWms.Desktop.UI.ViewModels;
 
@@ -38,6 +39,9 @@ public partial class ShellViewModel : BaseViewModel
 
     [RelayCommand]
     private void NavigateToIssues() => _nav.NavigateTo<IssueListViewModel>();
+
+    [RelayCommand]
+    private void NavigateToTransfers() => _nav.NavigateTo<TransferListViewModel>();
 
     [RelayCommand]
     private void NavigateToInventory() => _nav.NavigateTo<InventoryViewModel>();

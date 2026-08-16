@@ -67,12 +67,12 @@ public partial class ReceiptListViewModel : BaseViewModel
     [RelayCommand]
     private void Delete(ReceiptRow? row)
     {
-        if (row == null || row.IsReadOnly || row.Status != "Draft") return;
+        if (row == null || !row.CanEdit) return;
 
         var receipt = _db.LocalStockReceipts.Include(r => r.Items).FirstOrDefault(r => r.Id == row.Id);
         if (receipt != null)
         {
-            _db.LocalStockReceiptItems.RemoveRange(receipt.Items);
+            _db.LocalStockReceiptItems.RemoveRange(receipt.Items.ToList());
             _db.LocalStockReceipts.Remove(receipt);
             _db.SaveChanges();
             LoadReceipts();
@@ -82,10 +82,34 @@ public partial class ReceiptListViewModel : BaseViewModel
     [RelayCommand]
     private void Edit(ReceiptRow? row)
     {
-        if (row == null || row.IsReadOnly) return;
-        // Navigate to create view with existing receipt ID for editing
-        // For Phase 1, we'll just navigate to create (edit comes later)
-        _nav.NavigateTo<ReceiptCreateViewModel>();
+        if (row == null || !row.CanEdit) return;
+        _nav.NavigateTo<ReceiptCreateViewModel>(row.Id);
+    }
+
+    [RelayCommand]
+    private void Sync(ReceiptRow? row)
+    {
+        if (row == null || !row.CanSync) return;
+
+        var receipt = _db.LocalStockReceipts.FirstOrDefault(r => r.Id == row.Id);
+        if (receipt != null)
+        {
+            receipt.Status = "SyncFailed"; // Simulate failed sync since no API yet
+            receipt.SyncStatus = "Failed";
+            _db.SaveChanges();
+            LoadReceipts();
+        }
+    }
+
+    [RelayCommand]
+    private void ViewDetail(ReceiptRow? row)
+    {
+        if (row == null) return;
+        _nav.NavigateTo<TransactionDetailViewModel>(new TransactionDetailParams
+        {
+            DocumentId = row.Id,
+            DocumentType = "Receipt"
+        });
     }
 
     partial void OnFilterStatusChanged(string value) => LoadReceipts();
@@ -103,4 +127,7 @@ public class ReceiptRow
     public string Status { get; set; } = "";
     public string SyncStatus { get; set; } = "";
     public bool IsReadOnly { get; set; }
+    
+    public bool CanEdit => !IsReadOnly && (Status == "Draft" || Status == "PendingSync" || Status == "SyncFailed");
+    public bool CanSync => !IsReadOnly && (Status == "Draft" || Status == "PendingSync" || Status == "SyncFailed");
 }

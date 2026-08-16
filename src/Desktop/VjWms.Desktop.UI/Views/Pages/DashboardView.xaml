@@ -76,6 +76,9 @@
                     <Button Content="📤  Tạo Phiếu Xuất Kho" Margin="0,0,0,8"
                             Command="{Binding NavigateToIssuesCommand}"
                             Style="{DynamicResource QuickActionButton}" />
+                    <Button Content="🔄  Tạo Phiếu Luân Chuyển" Margin="0,0,0,8"
+                            Command="{Binding NavigateToTransfersCommand}"
+                            Style="{DynamicResource QuickActionButton}" />
                     <Button Content="🔄  Làm mới dữ liệu"
                             Command="{Binding RefreshCommand}"
                             Style="{DynamicResource QuickActionButton}" />

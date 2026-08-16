@@ -1,5 +1,6 @@
 using System.IO;
 using System.Windows;
+using System.Windows.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -15,6 +16,12 @@ public partial class App : Application
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        // Catch anything that would otherwise silently crash the process, so the user
+        // gets an error dialog instead of the app freezing and disappearing.
+        DispatcherUnhandledException += OnDispatcherUnhandledException;
+        AppDomain.CurrentDomain.UnhandledException += OnAppDomainUnhandledException;
+        TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
 
         // Setup Velopack (must be first)
         Velopack.VelopackApp.Build().Run();
@@ -95,11 +102,15 @@ public partial class App : Application
             optionsBuilder.UseSqlite($"Data Source={dbPath}");
             var context = new LocalDbContext(optionsBuilder.Options);
             context.Database.EnsureCreated();
+            EnsureEditHistoriesTable(context);
             return context;
         });
 
-        // Navigation Service
+        // Services
         services.AddSingleton<UI.Services.INavigationService, UI.Services.NavigationService>();
+        services.AddSingleton<UI.Services.Scanner.IScannerService, UI.Services.Scanner.ScannerService>();
+        services.AddTransient<UI.Services.AttachmentService>();
+
         services.AddSingleton<Func<Type, UI.ViewModels.BaseViewModel>>(sp => type => (UI.ViewModels.BaseViewModel)sp.GetRequiredService(type));
 
         // Register ViewModels
@@ -117,6 +128,11 @@ public partial class App : Application
         services.AddTransient<UI.ViewModels.Issues.IssueListViewModel>();
         services.AddTransient<UI.ViewModels.Issues.IssueCreateViewModel>();
 
+        services.AddTransient<UI.ViewModels.Transfers.TransferListViewModel>();
+        services.AddTransient<UI.ViewModels.Transfers.TransferCreateViewModel>();
+
+        services.AddTransient<UI.ViewModels.TransactionDetailViewModel>();
+
         // Register current DB context scoped to the active user (hacky for WPF but works for single user session)
         services.AddTransient<LocalDbContext>(sp => 
         {
@@ -124,6 +140,57 @@ public partial class App : Application
             var dbPath = Path.Combine(AppDataPath, "users", CurrentUsername ?? "admin", "local.db");
             return sp.GetRequiredService<Func<string, LocalDbContext>>()(dbPath);
         });
+    }
+
+    private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+    {
+        Log.Error(e.Exception, "Unhandled exception on UI thread");
+
+        MessageBox.Show(
+            $"Đã xảy ra lỗi không mong muốn. Thao tác vừa rồi chưa được lưu.\n\n" +
+            $"An unexpected error occurred. The last action was not saved.\n\n{e.Exception.Message}",
+            "Lỗi / Error",
+            MessageBoxButton.OK,
+            MessageBoxImage.Error);
+
+        // Prevents WPF from tearing down the process for this exception.
+        e.Handled = true;
+    }
+
+    private void OnAppDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        // Exceptions on non-UI threads can't be suppressed and will still terminate the
+        // process (IsTerminating is almost always true here) - at least log it before it dies.
+        Log.Fatal(e.ExceptionObject as Exception, "Unhandled exception on background thread (IsTerminating: {IsTerminating})", e.IsTerminating);
+        Log.CloseAndFlush();
+    }
+
+    private void OnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
+    {
+        Log.Error(e.Exception, "Unobserved task exception");
+        // Mark observed so the finalizer thread doesn't rethrow and crash the process.
+        e.SetObserved();
+    }
+
+    // EnsureCreated() only builds the schema for a brand-new database file - it does nothing
+    // for a file that already exists, even when the EF model has grown new tables since. The
+    // EditHistories table (Phase 2.5) was added after existing users' local.db files, so it
+    // never got created for them, causing "no such table: EditHistories" on every edit-save.
+    // Patch it in directly if missing; a no-op for databases where it already exists.
+    private static void EnsureEditHistoriesTable(LocalDbContext context)
+    {
+        context.Database.ExecuteSqlRaw(@"
+            CREATE TABLE IF NOT EXISTS ""EditHistories"" (
+                ""Id"" TEXT NOT NULL CONSTRAINT ""PK_EditHistories"" PRIMARY KEY,
+                ""DocumentId"" TEXT NOT NULL,
+                ""DocumentType"" TEXT NOT NULL,
+                ""Action"" TEXT NOT NULL,
+                ""OldValues"" TEXT NULL,
+                ""NewValues"" TEXT NULL,
+                ""ChangedBy"" TEXT NOT NULL,
+                ""ChangedAt"" TEXT NOT NULL,
+                ""Notes"" TEXT NULL
+            )");
     }
 
     public static string? CurrentUsername { get; set; }

@@ -49,3 +49,30 @@ public class InverseBoolToVisConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => Translate(value, targetType, parameter, culture);
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
 }
+
+public class BoolToVisConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is bool b)
+            return b ? Visibility.Visible : Visibility.Collapsed;
+        return Visibility.Collapsed;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+}
+
+public class InverseBoolConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is bool b) return !b;
+        return true;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is bool b) return !b;
+        return true;
+    }
+}

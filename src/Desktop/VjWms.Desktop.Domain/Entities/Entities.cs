@@ -252,3 +252,20 @@ public class SyncMetadata
     public string Value { get; set; } = string.Empty;
     public string UpdatedAt { get; set; } = string.Empty;
 }
+
+// ============================================================
+// EDIT HISTORY (local audit trail)
+// ============================================================
+
+public class LocalEditHistory
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public string DocumentId { get; set; } = string.Empty;
+    public string DocumentType { get; set; } = string.Empty; // "Receipt" | "Issue" | "Transfer"
+    public string Action { get; set; } = string.Empty;       // "Created" | "Edited" | "StatusChanged" | "Synced"
+    public string? OldValues { get; set; }                    // JSON snapshot before edit
+    public string? NewValues { get; set; }                    // JSON snapshot after edit
+    public string ChangedBy { get; set; } = string.Empty;
+    public string ChangedAt { get; set; } = string.Empty;
+    public string? Notes { get; set; }
+}

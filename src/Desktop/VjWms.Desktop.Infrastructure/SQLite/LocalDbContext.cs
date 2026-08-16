@@ -34,6 +34,9 @@ public class LocalDbContext : DbContext
     public DbSet<SyncLog> SyncLogs => Set<SyncLog>();
     public DbSet<SyncMetadata> SyncMetadata => Set<SyncMetadata>();
 
+    // Edit History
+    public DbSet<LocalEditHistory> EditHistories => Set<LocalEditHistory>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
