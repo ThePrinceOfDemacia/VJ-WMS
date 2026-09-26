@@ -217,7 +217,6 @@ public partial class IssueCreateViewModel : BaseViewModel, IParameterReceiver
         if (result != null)
         {
             ProcessScannedData(result);
-            ScanStatusMessage = "Đã quét ảnh thành công!";
         }
         else
         {
@@ -239,7 +238,6 @@ public partial class IssueCreateViewModel : BaseViewModel, IParameterReceiver
             _scanner.StartHidListening(data => 
             {
                 ProcessScannedData(data);
-                ScanStatusMessage = $"Vừa quét: {data}";
             });
             IsHidListening = true;
             ScanStatusMessage = "Đang lắng nghe máy quét USB...";
@@ -248,6 +246,22 @@ public partial class IssueCreateViewModel : BaseViewModel, IParameterReceiver
 
     private void ProcessScannedData(string data)
     {
+        var parsed = QrDataParser.Parse(data);
+        
+        // Show the parsed result to the user
+        System.Windows.MessageBox.Show(
+            parsed.ToDisplaySummary(),
+            "Kết quả quét QR",
+            System.Windows.MessageBoxButton.OK,
+            parsed.IsValid ? System.Windows.MessageBoxImage.Information : System.Windows.MessageBoxImage.Warning);
+
+        if (!parsed.IsValid)
+        {
+            ScanStatusMessage = "Không đọc được QR";
+            return;
+        }
+
+        // Find or add a line item
         var line = LineItems.LastOrDefault();
         if (line != null && line.SelectedProduct != null && line.Quantity > 0)
         {
@@ -255,19 +269,37 @@ public partial class IssueCreateViewModel : BaseViewModel, IParameterReceiver
             line = LineItems.Last();
         }
 
-        var product = Products.FirstOrDefault(p => p.ProductCode.Equals(data, StringComparison.OrdinalIgnoreCase));
-        if (line != null)
+        if (line == null) return;
+
+        // Try to match product by GradeName against ProductCode or ProductName
+        var product = Products.FirstOrDefault(p =>
+            p.ProductCode.Equals(parsed.GradeName, StringComparison.OrdinalIgnoreCase) ||
+            p.ProductName.Contains(parsed.GradeName, StringComparison.OrdinalIgnoreCase));
+
+        if (product != null)
         {
-            if (product != null)
-            {
-                line.SelectedProduct = product;
-                line.Quantity = 1;
-            }
-            else
-            {
-                line.LineNotes = $"Scanned: {data}";
-            }
+            line.SelectedProduct = product;
         }
+
+        // Fill lot number
+        if (!string.IsNullOrEmpty(parsed.LotNumber))
+            line.LotNumber = parsed.LotNumber;
+
+        // Fill quantity from total weight if available
+        if (parsed.TotalWeight > 0)
+            line.Quantity = parsed.TotalWeight;
+        else
+            line.Quantity = 1;
+
+        // Fill batch number with pallet ID
+        if (!string.IsNullOrEmpty(parsed.PalletId))
+            line.BatchNumber = parsed.PalletId;
+
+        // Fill number of bags if available
+        if (parsed.BagCount > 0)
+            line.NumberOfBags = parsed.BagCount;
+
+        ScanStatusMessage = $"✅ Đã quét: {parsed.GradeName} — Lô: {parsed.LotNumber}";
     }
 
     [RelayCommand]

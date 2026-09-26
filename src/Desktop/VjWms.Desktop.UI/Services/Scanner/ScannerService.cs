@@ -71,6 +71,8 @@ public class ScannerService : IScannerService
                 BarcodeFormat.UPC_A,
                 BarcodeFormat.DATA_MATRIX
             };
+            reader.Options.TryHarder = true;
+            reader.AutoRotate = true;
 
             using var bitmap = new Bitmap(dialog.FileName);
             var result = reader.Decode(bitmap);
